@@ -15,6 +15,7 @@ coverage
 *.local
 
 /src/tempDb/
+*.env
 
 /cypress/videos/
 /cypress/screenshots/
