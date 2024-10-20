@@ -1,5 +1,63 @@
 <script setup lang="ts">
-// /import { RouterLink, RouterView } from 'vue-router'
+// Environment Variables for brokerage statments
+const csJSON = import.meta.env.VITE_CS_HISTORY_DIR
+const fileName = import.meta.env.VITE_CS_FILENAME
+
+// Fetches JSON from local storage
+// TODO: make a drag and drop or user upload
+const getHistoryFile = async () => {
+  const response = await fetch(`${csJSON}/${fileName}`)
+  const data = await response.json()
+  return data
+}
+
+// on click, get history and make table
+const getHistory = async () => {
+  const dump = await getHistoryFile()
+
+  if (!dump) {
+    return
+  }
+
+  const startDate = dump.FromDate
+  const endDate = dump.ToDate
+  const totalTransactionsAmount = dump.TotalTransactionsAmount
+
+  const data = dump.BrokerageTransactions
+
+  const historyTable = document.getElementById('history-table')
+
+  if (!historyTable) {
+    return
+  } else {
+    const container = document.createElement('div')
+    container.innerHTML = `
+    <p class="text-xl text-gray-200">Start Date: ${startDate}</p>
+    <p class="text-xl text-gray-200">End Date: ${endDate}</p>
+    <p class="text-xl text-gray-200">Total Transactions Amount: ${totalTransactionsAmount}</p>
+    `
+
+    historyTable.innerHTML = ''
+
+    for (let i = 0; i < data.length; i++) {
+      const row = data[i]
+      const newRow = document.createElement('tr')
+      newRow.innerHTML = `
+
+      <td class="px-6 py-4 whitespace-nowrap text-gray-200 border-b border-gray-200">${row.Date}</td>
+      <td class="px-6 py-4 whitespace-nowrap text-gray-200 border-b border-gray-200">${row.Symbol}</td>
+      <td class="px-6 py-4 whitespace-nowrap text-gray-200 border-b border-gray-200">${row.Description}</td>
+      <td class="px-6 py-4 whitespace-nowrap text-gray-200 border-b border-gray-200">${row.Quantity}</td>
+      <td class="px-6 py-4 whitespace-nowrap text-gray-200 border-b border-gray-200">${row.Price}</td>
+      <td class="px-6 py-4 whitespace-nowrap">${row.Amount}</td>
+      <td class="px-6 py-4 whitespace-nowrap">${row.Action}</td>
+
+
+      `
+      historyTable?.appendChild(newRow)
+    }
+  }
+}
 </script>
 
 <template>
@@ -7,7 +65,13 @@
     <RouterView />
 
     <div class="wrapper">
-      <h1 class="bg-green-600">iBroke Brokreage Tracker</h1>
+      <h1>iBroke Brokreage Tracker</h1>
+
+      <button @click="getHistory()">Show History</button>
+
+      <div id="history-table">
+        <p class="bg-green-600">History Table.....</p>
+      </div>
 
       <div></div>
     </div>
