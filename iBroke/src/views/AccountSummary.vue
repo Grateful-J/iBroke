@@ -127,14 +127,12 @@ const actions = [
 
 //Toggle function for sensitive data
 
-let isContentVisable = ref(true)
+const isContentVisable = ref()
 
 const toggleVisability = () => {
-  if (isContentVisable.value == true) {
-    isContentVisable.value = !isContentVisable.value
-  } else {
-    isContentVisable.value = !isContentVisable.value
-  }
+  isContentVisable.value == true
+    ? (isContentVisable.value = false)
+    : (isContentVisable.value = true)
 }
 </script>
 
