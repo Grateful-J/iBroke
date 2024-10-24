@@ -9,7 +9,6 @@
     <span>
       <p class="text-xl">
         Total Transactions Amount:
-
         <span>
           <p
             :class="visibiltyClasses[isContentVisable ? 'visible' : 'blurred']"
@@ -21,7 +20,9 @@
       <button
         class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-blue-200 focus:ring my-2"
         @click.prevent="
-          isContentVisable ? toggleVisability() : toggleVisability()
+          isContentVisable
+            ? (isContentVisable = false)
+            : (isContentVisable = true)
         "
       >
         Show/Hide
@@ -138,12 +139,6 @@ const actions = [
 //Toggle function for sensitive data
 
 const isContentVisable = ref()
-
-const toggleVisability = () => {
-  isContentVisable.value == true
-    ? (isContentVisable.value = false)
-    : (isContentVisable.value = true)
-}
 
 const visibiltyClasses = {
   visible: `text-xl text-white`,
