@@ -32,7 +32,6 @@
     <div>
       <select
         v-model="selectedTransaction"
-        @change="console.log(selectedTransaction)"
         class="text-xl text-gray-100 bg-slate-600"
       >
         <option v-for="(action, index) in actions" :key="index">
@@ -58,7 +57,7 @@
       </thead>
       <tbody>
         <tr
-          v-for="(row, index) in transactions"
+          v-for="(row, index) in filteredTransactions"
           :key="index"
           class="border-b border-gray-700"
         >
@@ -81,7 +80,7 @@ const csJSON = import.meta.env.VITE_CS_HISTORY_DIR
 const fileName = import.meta.env.VITE_CS_FILENAME
 
 // State for transactions
-import { ref, defineExpose } from 'vue'
+import { ref, defineExpose, computed } from 'vue'
 const transactions = ref([])
 const summary = ref({
   startDate: '',
@@ -136,6 +135,18 @@ const actions = [
   'Reinvest Shares',
   'Reinvest Dividend',
 ]
+
+// Create Filterd Transction Logic
+
+const filteredTransactions = computed<string>(() => {
+  if (!selectedTransaction.value) {
+    return transactions.value
+  } else {
+    return transactions.value.filter(
+      transaction => transaction.Action === selectedTransaction.value,
+    )
+  }
+})
 
 // TODO: Add logic for user uploads, sorting, MongoDB checks, etc.
 
