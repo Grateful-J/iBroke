@@ -1,12 +1,22 @@
 <template>
-
   <!-- Summary of Transactions -->
-  <div v-if="summary.startDate" class="mt-6 bg-gray-800 p-4 rounded-lg text-gray-300">
+  <div
+    v-if="summary.startDate"
+    class="mt-6 bg-gray-800 p-4 rounded-lg text-gray-300"
+  >
     <p class="text-xl">Start Date: {{ summary.startDate }}</p>
     <p class="text-xl">End Date: {{ summary.endDate }}</p>
-    <p class="text-xl">
-      Total Transactions Amount: {{ summary.totalAmount }}
-    </p>
+    <span>
+      <p v-show="isContentVisable" class="text-xl blur-md">
+        Total Transactions Amount: {{ summary.totalAmount }}
+      </p>
+      <button
+        class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-blue-200 focus:ring my-2"
+        @click.prevent="toggleVisability"
+      >
+        Show/Hide
+      </button>
+    </span>
   </div>
 
   <!-- Transactions Table -->
@@ -24,7 +34,11 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(row, index) in transactions" :key="index" class="border-b border-gray-700">
+        <tr
+          v-for="(row, index) in transactions"
+          :key="index"
+          class="border-b border-gray-700"
+        >
           <td class="px-6 py-4">{{ row.Date }}</td>
           <td class="px-6 py-4">{{ row.Symbol }}</td>
           <td class="px-6 py-4">{{ row.Description }}</td>
@@ -36,17 +50,12 @@
       </tbody>
     </table>
   </div>
-
-
 </template>
 
 <script setup lang="ts" name="AccountSummary">
-
 // Environment Variables for brokerage statements
 const csJSON = import.meta.env.VITE_CS_HISTORY_DIR
 const fileName = import.meta.env.VITE_CS_FILENAME
-
-
 
 // State for transactions
 import { ref, defineExpose } from 'vue'
@@ -116,10 +125,18 @@ const actions = [
 // give user an option to input estimated tax bracket to determine short term tax burden estimator
 // give suggestions for tax loss harvesting
 
+//Toggle function for sensitive data
 
+let isContentVisable = ref(true)
+
+const toggleVisability = () => {
+  if (isContentVisable.value == true) {
+    isContentVisable.value = !isContentVisable.value
+  } else {
+    isContentVisable.value = !isContentVisable.value
+  }
+}
 </script>
-
-
 
 <style scoped>
 main {
