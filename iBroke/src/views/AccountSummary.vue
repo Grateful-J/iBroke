@@ -147,7 +147,7 @@ const toggleVisability = () => {
 
 const visibiltyClasses = {
   visible: `text-xl text-white`,
-  blurred: `text-xl text-green-600`,
+  blurred: `text-xl blur-md`,
 }
 </script>
 
