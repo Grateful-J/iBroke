@@ -7,12 +7,22 @@
     <p class="text-xl">Start Date: {{ summary.startDate }}</p>
     <p class="text-xl">End Date: {{ summary.endDate }}</p>
     <span>
-      <p v-show="isContentVisable" class="text-xl blur-md">
-        Total Transactions Amount: {{ summary.totalAmount }}
+      <p class="text-xl">
+        Total Transactions Amount:
+
+        <span>
+          <p
+            :class="visibiltyClasses[isContentVisable ? 'visible' : 'blurred']"
+          >
+            {{ summary.totalAmount }}
+          </p>
+        </span>
       </p>
       <button
         class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-blue-200 focus:ring my-2"
-        @click.prevent="toggleVisability"
+        @click.prevent="
+          isContentVisable ? toggleVisability() : toggleVisability()
+        "
       >
         Show/Hide
       </button>
@@ -133,6 +143,11 @@ const toggleVisability = () => {
   isContentVisable.value == true
     ? (isContentVisable.value = false)
     : (isContentVisable.value = true)
+}
+
+const visibiltyClasses = {
+  visible: `text-xl text-white`,
+  blurred: `text-xl text-green-600`,
 }
 </script>
 
