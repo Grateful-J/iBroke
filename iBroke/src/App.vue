@@ -1,143 +1,165 @@
 <script setup lang="ts">
-// Environment Variables for brokerage statments
+// Environment Variables for brokerage statements
 const csJSON = import.meta.env.VITE_CS_HISTORY_DIR
 const fileName = import.meta.env.VITE_CS_FILENAME
 
-// Fetches JSON from local storage
-// TODO: make a drag and drop or user upload
+// State for transactions
+import { ref } from 'vue'
+const transactions = ref([])
+const summary = ref({
+  startDate: '',
+  endDate: '',
+  totalAmount: 0,
+})
+
+// Fetch JSON data
 const getHistoryFile = async () => {
-  const response = await fetch(`${csJSON}/${fileName}`)
-  const data = await response.json()
-  return data
+  try {
+    const response = await fetch(`${csJSON}/${fileName}`)
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.error('Failed to load history:', error)
+  }
 }
 
-// on click, get history and make table
+// Handle fetching and populating history data
 const getHistory = async () => {
   const dump = await getHistoryFile()
 
-  if (!dump) {
-    return
+  if (!dump) return
+
+  summary.value = {
+    startDate: dump.FromDate,
+    endDate: dump.ToDate,
+    totalAmount: dump.TotalTransactionsAmount,
   }
 
-  const startDate = dump.FromDate
-  const endDate = dump.ToDate
-  const totalTransactionsAmount = dump.TotalTransactionsAmount
-
-  const data = dump.BrokerageTransactions
-
-  const historyTable = document.getElementById('history-table')
-
-  if (!historyTable) {
-    return
-  } else {
-    const container = document.createElement('div')
-    container.innerHTML = `
-    <p class="text-xl text-gray-200">Start Date: ${startDate}</p>
-    <p class="text-xl text-gray-200">End Date: ${endDate}</p>
-    <p class="text-xl text-gray-200">Total Transactions Amount: ${totalTransactionsAmount}</p>
-    `
-
-    historyTable.innerHTML = ''
-
-    for (let i = 0; i < data.length; i++) {
-      const row = data[i]
-      const newRow = document.createElement('tr')
-      newRow.innerHTML = `
-
-      <td class="px-6 py-4 whitespace-nowrap text-gray-200 border-b border-gray-200">${row.Date}</td>
-      <td class="px-6 py-4 whitespace-nowrap text-gray-200 border-b border-gray-200">${row.Symbol}</td>
-      <td class="px-6 py-4 whitespace-nowrap text-gray-200 border-b border-gray-200">${row.Description}</td>
-      <td class="px-6 py-4 whitespace-nowrap text-gray-200 border-b border-gray-200">${row.Quantity}</td>
-      <td class="px-6 py-4 whitespace-nowrap text-gray-200 border-b border-gray-200">${row.Price}</td>
-      <td class="px-6 py-4 whitespace-nowrap">${row.Amount}</td>
-      <td class="px-6 py-4 whitespace-nowrap">${row.Action}</td>
-
-
-      `
-      historyTable?.appendChild(newRow)
-    }
-  }
+  transactions.value = dump.BrokerageTransactions
 }
+
+// Predefined types of actions
+const actions = [
+  'Cash Dividend',
+  'Buy to Close',
+  'Buy',
+  'Sell',
+  'Sell to Open',
+  'Sell to Close',
+  'Buy to Open',
+  'Credit Interest',
+  'Money Link Transfer',
+  'Expired',
+  'Assigned',
+  'Reinvest Shares',
+  'Reinvest Dividend',
+]
+
+// TODO: Add logic for user uploads, sorting, MongoDB checks, etc.
+
+// Whiteboard-
+// user inputs JSON data via upload (currently pulls from local dev server)
+// sorts transactons based on actions
+// if action is Sell to Open, etc then it is an ${contract}
+// figure out how to organize the data and keep a running list of current options
+// give options a unique id so they can be tracked and closes/ assigned/ or expired/ or rolled into a later contact
+// TODO: checks mongoDB and updates any lines
+// Allow user to sort by date, symbol, and/or action
+// give metrics for total transactions, total fees, total amount, return on investment,
+// give user an option to input estimated tax bracket to determine short term tax burden estimator
+// give suggestions for tax loss harvesting
 </script>
 
 <template>
-  <main>
-    <RouterView />
+  <main class="p-4">
+    <h1 class="text-3xl font-bold text-gray-200 mb-4">
+      iBroke Brokerage Tracker
+    </h1>
 
-    <div class="wrapper">
-      <h1>iBroke Brokreage Tracker</h1>
+    <button
+      @click="getHistory"
+      class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:ring"
+    >
+      Show History
+    </button>
 
-      <button @click="getHistory()">Show History</button>
+    <!-- Summary of Transactions -->
+    <div
+      v-if="summary.startDate"
+      class="mt-6 bg-gray-800 p-4 rounded-lg text-gray-300"
+    >
+      <p class="text-xl">Start Date: {{ summary.startDate }}</p>
+      <p class="text-xl">End Date: {{ summary.endDate }}</p>
+      <p class="text-xl">
+        Total Transactions Amount: {{ summary.totalAmount }}
+      </p>
+    </div>
 
-      <div id="history-table">
-        <p class="bg-green-600">History Table.....</p>
-      </div>
-
-      <div></div>
+    <!-- Transactions Table -->
+    <div v-if="transactions.length" class="mt-4 overflow-x-auto">
+      <table class="min-w-full bg-gray-800 text-gray-300">
+        <thead>
+          <tr class="bg-gray-900 text-left">
+            <th class="px-6 py-3">Date</th>
+            <th class="px-6 py-3">Symbol</th>
+            <th class="px-6 py-3">Description</th>
+            <th class="px-6 py-3">Quantity</th>
+            <th class="px-6 py-3">Price</th>
+            <th class="px-6 py-3">Amount</th>
+            <th class="px-6 py-3">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(row, index) in transactions"
+            :key="index"
+            class="border-b border-gray-700"
+          >
+            <td class="px-6 py-4">{{ row.Date }}</td>
+            <td class="px-6 py-4">{{ row.Symbol }}</td>
+            <td class="px-6 py-4">{{ row.Description }}</td>
+            <td class="px-6 py-4">{{ row.Quantity }}</td>
+            <td class="px-6 py-4">{{ row.Price }}</td>
+            <td class="px-6 py-4">{{ row.Amount }}</td>
+            <td class="px-6 py-4">{{ row.Action }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </main>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  color: #e2e8f0; /* Light gray for readability on dark background */
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
+table {
   width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
+  border-collapse: collapse;
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
+th,
+td {
+  padding: 12px 16px;
 }
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+th {
+  background-color: #1f2937;
+  text-transform: uppercase;
 }
 
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
+td {
+  background-color: #374151;
 }
 
-nav a:first-of-type {
-  border: 0;
+button {
+  transition: background-color 0.3s ease;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+button:hover {
+  background-color: #3b82f6;
 }
 </style>
