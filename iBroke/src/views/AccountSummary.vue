@@ -29,9 +29,13 @@
       </button>
     </span>
 
-    <div class="text-green-800">
-      <select actions>
-        <option v-for="action in actions">
+    <div>
+      <select
+        v-model="selectedTransaction"
+        @change="console.log(selectedTransaction)"
+        class="text-xl text-gray-100 bg-slate-600"
+      >
+        <option v-for="(action, index) in actions" :key="index">
           {{ action }}
         </option>
       </select>
@@ -84,6 +88,9 @@ const summary = ref({
   endDate: '',
   totalAmount: 0,
 })
+const selectedTransaction = ref()
+
+console.log(`option selected: ${selectedTransaction.value}`)
 
 // Fetch JSON data
 const getHistoryFile = async () => {
