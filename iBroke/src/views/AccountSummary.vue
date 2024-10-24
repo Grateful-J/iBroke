@@ -28,6 +28,14 @@
         Show/Hide
       </button>
     </span>
+
+    <div class="text-green-800">
+      <select actions>
+        <option v-for="action in actions">
+          {{ action }}
+        </option>
+      </select>
+    </div>
   </div>
 
   <!-- Transactions Table -->
