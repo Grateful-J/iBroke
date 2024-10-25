@@ -1,43 +1,65 @@
 <template>
-  <!-- Summary of Transactions -->
-  <div
-    v-if="summary.startDate"
-    class="mt-6 bg-gray-800 p-4 rounded-lg text-gray-300"
-  >
-    <p class="text-xl">Start Date: {{ summary.startDate }}</p>
-    <p class="text-xl">End Date: {{ summary.endDate }}</p>
-    <span>
-      <p class="text-xl">
-        Total Transactions Amount:
-        <span>
-          <p
-            :class="visibiltyClasses[isContentVisable ? 'visible' : 'blurred']"
-          >
-            {{ summary.totalAmount }}
-          </p>
-        </span>
-      </p>
-      <button
-        class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-blue-200 focus:ring my-2"
-        @click.prevent="
-          isContentVisable
-            ? (isContentVisable = false)
-            : (isContentVisable = true)
-        "
-      >
-        Show/Hide
-      </button>
-    </span>
+  <div>
+    <!-- Summary of Transactions -->
+    <div
+      v-if="summary.startDate"
+      class="mt-6 bg-gray-800 p-4 rounded-lg text-gray-300"
+    >
+      <p class="text-xl">Start Date: {{ summary.startDate }}</p>
+      <p class="text-xl">End Date: {{ summary.endDate }}</p>
+      <span>
+        <p class="text-xl">
+          Total Transactions Amount:
+          <span>
+            <p
+              :class="
+                visibiltyClasses[isContentVisable ? 'visible' : 'blurred']
+              "
+            >
+              {{ summary.totalAmount }}
+            </p>
+          </span>
+        </p>
+        <button
+          class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-blue-200 focus:ring my-2"
+          @click.prevent="
+            isContentVisable
+              ? (isContentVisable = false)
+              : (isContentVisable = true)
+          "
+        >
+          Show/Hide
+        </button>
+      </span>
 
+      <div class="flex col justify-between">
+        <select
+          @change="filteredAmounts"
+          v-model="selectedTransaction"
+          class="text-xl text-gray-100 bg-slate-600"
+        >
+          <option v-for="(action, index) in actions" :key="index">
+            {{ action }}
+          </option>
+        </select>
+
+        <!-- Total Element-->
+        <div class="px-32">
+          <span>
+            <h2 class="text-2xl text-white">Subtotal</h2>
+          </span>
+          <span>
+            <h2 :subTotal>{{ subTotal.value }}</h2>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Element-->
     <div>
-      <select
-        v-model="selectedTransaction"
-        class="text-xl text-gray-100 bg-slate-600"
-      >
-        <option v-for="(action, index) in actions" :key="index">
-          {{ action }}
-        </option>
-      </select>
+      <span>
+        <p class="text-2xl text-white">Subtotal</p>
+      </span>
     </div>
   </div>
 
@@ -129,25 +151,53 @@ const actions = [
   'Sell to Close',
   'Buy to Open',
   'Credit Interest',
-  'Money Link Transfer',
+  'MoneyLink Transfer',
   'Expired',
   'Assigned',
   'Reinvest Shares',
   'Reinvest Dividend',
 ]
 
+let subTotal = 0
+subTotal += 1
 // Create Filterd Transction Logic
-
 const filteredTransactions = computed<string>(() => {
   if (!selectedTransaction.value) {
     return transactions.value
   } else {
-    return transactions.value.filter(
+    const results = transactions.value.filter(
       transaction => transaction.Action === selectedTransaction.value,
     )
+    console.log(`The Results: ${JSON.stringify(results)}`)
+
+    const priceFactory = data => {
+      return data.map(transaction => transaction.Amount)
+    }
+
+    // Maps filteredTransactions and sums the amount
+
+    const filteredAmounts = data => {
+      const prices = priceFactory(data)
+      console.log(`The Prices are: ${prices}`)
+    }
+
+    filteredAmounts(results)
+
+    return results
   }
 })
 
+/* const priceFactory = data => {
+  return data.map(transaction => transaction.Amount)
+}
+
+// Maps filteredTransactions and sums the amount
+
+const filteredAmounts = () => {
+  const prices = priceFactory(results)
+  console.log(`The Prices are: ${prices}`)
+}
+ */
 // TODO: Add logic for user uploads, sorting, MongoDB checks, etc.
 
 // Whiteboard-
