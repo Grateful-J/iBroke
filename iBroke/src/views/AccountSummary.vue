@@ -43,25 +43,15 @@
         </select>
 
         <!-- Total Element-->
-        <div class="px-32">
+        <div>
           <span>
-            <h2 class="text-2xl text-white">Subtotal</h2>
+            <p class="text-2xl text-white">Subtotal</p>
           </span>
           <span>
-            <h2 :subTotal>{{ subTotal.value }}</h2>
+            <p v-bind="subTotal">${{ subTotal }}</p>
           </span>
         </div>
       </div>
-    </div>
-
-    <!-- Total Element-->
-    <div>
-      <span>
-        <p class="text-2xl text-white">Subtotal</p>
-      </span>
-      <span>
-        <p v-bind="subTotal">{{ subTotal }}</p>
-      </span>
     </div>
   </div>
 
