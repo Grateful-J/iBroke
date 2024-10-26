@@ -48,7 +48,13 @@
             <p class="text-2xl text-white">Subtotal</p>
           </span>
           <span>
-            <p v-bind="subTotal">${{ subTotal }}</p>
+            <p
+              :class="
+                visibiltyClasses[isContentVisable ? 'visible' : 'blurred']
+              "
+            >
+              {{ subTotal }}
+            </p>
           </span>
         </div>
       </div>
@@ -103,7 +109,7 @@ const summary = ref({
 })
 const selectedTransaction = ref()
 
-console.log(`option selected: ${selectedTransaction.value}`)
+//console.log(`option selected: ${selectedTransaction.value}`)
 
 // Fetch JSON data
 const getHistoryFile = async () => {
@@ -135,6 +141,8 @@ defineExpose({ getHistory })
 
 // Predefined types of actions
 const actions = [
+  'All',
+  '-',
   'Cash Dividend',
   'Buy to Close',
   'Buy',
@@ -158,7 +166,6 @@ const priceFactory = data => {
 const calculateTotal = priceArray => {
   const convertAmountStingToNum = amount => {
     const newFloat = parseFloat(amount.replace(/[^0-9.-]+/g, ''))
-    console.log(`The new Float is: ${newFloat}`)
     return newFloat
   }
 
@@ -181,10 +188,24 @@ const filteredTransactions = computed<string>(() => {
   }
 })
 
+// Subtotal formatter> Rounds to nearest hundreth and adds in a comma if >$1k
+const totalFormatter = (number: float) => {
+  if (!number || number === 0 || isNaN(number)) {
+    return '$0.00'
+  } else if (number < 1000) {
+    return `$${number.toFixed(2)}`
+  } else {
+    return `$${number.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}`
+  }
+}
+
 const subTotal = computed(() => {
   const amounts = priceFactory(filteredTransactions.value)
   const total = calculateTotal(amounts)
-  return Math.floor(total)
+  console.log(`total: ${total}`)
+  console.log(`Total Formatter 3000: ${totalFormatter(total)}`)
+  const formatted = totalFormatter(total)
+  return formatted
 })
 
 // TODO: Add logic for user uploads, sorting, MongoDB checks, etc.
