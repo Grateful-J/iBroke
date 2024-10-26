@@ -34,7 +34,6 @@
 
       <div class="flex col justify-between">
         <select
-          @change="filteredAmounts"
           v-model="selectedTransaction"
           class="text-xl text-gray-100 bg-slate-600"
         >
@@ -159,7 +158,29 @@ const actions = [
 ]
 
 let subTotal = 0
-subTotal += 1
+
+// Maps filteredTransactions and sums the amount
+const priceFactory = data => {
+  return data.map(transaction => transaction.Amount)
+}
+/* const filteredAmounts = data => {
+  const prices = priceFactory(data)
+  //console.log(`The Prices are: ${prices}`)
+} */
+
+const calculateTotal = priceArray => {
+  const convertAmountStingToNum = amount => {
+    const newFloat = parseFloat(amount.replace(/[^0-9,-]+/g, ''))
+    console.log(`Da new Float is: ${newFloat}`)
+    return newFloat
+  }
+
+  //reduce the price array to get running total
+  return priceArray.reduce((total, amount) => {
+    return total + convertAmountStingToNum(amount)
+  }, 0)
+}
+
 // Create Filterd Transction Logic
 const filteredTransactions = computed<string>(() => {
   if (!selectedTransaction.value) {
@@ -168,20 +189,12 @@ const filteredTransactions = computed<string>(() => {
     const results = transactions.value.filter(
       transaction => transaction.Action === selectedTransaction.value,
     )
-    console.log(`The Results: ${JSON.stringify(results)}`)
+    //console.log(`The Results: ${JSON.stringify(results)}`)
 
-    const priceFactory = data => {
-      return data.map(transaction => transaction.Amount)
-    }
-
-    // Maps filteredTransactions and sums the amount
-
-    const filteredAmounts = data => {
-      const prices = priceFactory(data)
-      console.log(`The Prices are: ${prices}`)
-    }
-
-    filteredAmounts(results)
+    const amounts = priceFactory(results)
+    const total = calculateTotal(amounts)
+    console.log(`holy shit please make this work ${total}`)
+    subTotal = total
 
     return results
   }
