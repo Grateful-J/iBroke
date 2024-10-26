@@ -59,6 +59,9 @@
       <span>
         <p class="text-2xl text-white">Subtotal</p>
       </span>
+      <span>
+        <p v-bind="subTotal">{{ subTotal }}</p>
+      </span>
     </div>
   </div>
 
@@ -157,16 +160,10 @@ const actions = [
   'Reinvest Dividend',
 ]
 
-let subTotal = 0
-
 // Maps filteredTransactions and sums the amount
 const priceFactory = data => {
   return data.map(transaction => transaction.Amount)
 }
-/* const filteredAmounts = data => {
-  const prices = priceFactory(data)
-  //console.log(`The Prices are: ${prices}`)
-} */
 
 const calculateTotal = priceArray => {
   const convertAmountStingToNum = amount => {
@@ -189,28 +186,17 @@ const filteredTransactions = computed<string>(() => {
     const results = transactions.value.filter(
       transaction => transaction.Action === selectedTransaction.value,
     )
-    //console.log(`The Results: ${JSON.stringify(results)}`)
-
-    const amounts = priceFactory(results)
-    const total = calculateTotal(amounts)
-    console.log(`holy shit please make this work ${total}`)
-    subTotal = total
 
     return results
   }
 })
 
-/* const priceFactory = data => {
-  return data.map(transaction => transaction.Amount)
-}
+const subTotal = computed(() => {
+  const amounts = priceFactory(filteredTransactions.value)
+  const total = calculateTotal(amounts)
+  return Math.floor(total)
+})
 
-// Maps filteredTransactions and sums the amount
-
-const filteredAmounts = () => {
-  const prices = priceFactory(results)
-  console.log(`The Prices are: ${prices}`)
-}
- */
 // TODO: Add logic for user uploads, sorting, MongoDB checks, etc.
 
 // Whiteboard-
