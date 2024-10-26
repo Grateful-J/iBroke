@@ -170,8 +170,8 @@ const priceFactory = data => {
 
 const calculateTotal = priceArray => {
   const convertAmountStingToNum = amount => {
-    const newFloat = parseFloat(amount.replace(/[^0-9,-]+/g, ''))
-    console.log(`Da new Float is: ${newFloat}`)
+    const newFloat = parseFloat(amount.replace(/[^0-9.-]+/g, ''))
+    console.log(`The new Float is: ${newFloat}`)
     return newFloat
   }
 
