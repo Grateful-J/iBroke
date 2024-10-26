@@ -1,96 +1,91 @@
 <template>
-  <div>
+  <div class="p-4 sm:p-6 md:p-8 bg-gray-900 min-h-screen">
     <!-- Summary of Transactions -->
     <div
       v-if="summary.startDate"
-      class="mt-6 bg-gray-800 p-4 rounded-lg text-gray-300"
+      class="bg-gray-800 p-6 rounded-lg text-gray-300 space-y-4"
     >
-      <p class="text-xl">Start Date: {{ summary.startDate }}</p>
-      <p class="text-xl">End Date: {{ summary.endDate }}</p>
-      <span>
-        <p class="text-xl">
+      <div class="flex flex-col sm:flex-row justify-between items-center">
+        <p class="text-lg sm:text-xl font-semibold">
+          Start Date: {{ summary.startDate }}
+        </p>
+        <p class="text-lg sm:text-xl font-semibold">
+          End Date: {{ summary.endDate }}
+        </p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row justify-between items-center mt-4">
+        <p class="text-lg sm:text-xl font-semibold">
           Total Transactions Amount:
-          <span>
-            <p
-              :class="
-                visibiltyClasses[isContentVisable ? 'visible' : 'blurred']
-              "
-            >
-              {{ summary.totalAmount }}
-            </p>
+          <span
+            :class="visibiltyClasses[isContentVisable ? 'visible' : 'blurred']"
+          >
+            {{ summary.totalAmount }}
           </span>
         </p>
         <button
-          class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-blue-200 focus:ring my-2"
-          @click.prevent="
-            isContentVisable
-              ? (isContentVisable = false)
-              : (isContentVisable = true)
-          "
+          class="mt-2 sm:mt-0 bg-gray-600 text-white px-4 py-2 rounded hover:bg-blue-500 focus:ring focus:ring-blue-300"
+          @click.prevent="isContentVisable = !isContentVisable"
         >
           Show/Hide
         </button>
-      </span>
+      </div>
 
-      <div class="flex col justify-between">
+      <div
+        class="flex flex-col sm:flex-row justify-between items-center mt-6 space-y-4 sm:space-y-0"
+      >
         <select
           v-model="selectedTransaction"
-          class="text-xl text-gray-100 bg-slate-600"
+          class="text-lg sm:text-xl text-gray-100 bg-gray-700 p-2 rounded-md w-full sm:w-auto"
         >
           <option v-for="(action, index) in actions" :key="index">
             {{ action }}
           </option>
         </select>
 
-        <!-- Total Element-->
-        <div>
-          <span>
-            <p class="text-2xl text-white">Subtotal</p>
-          </span>
-          <span>
-            <p
-              :class="
-                visibiltyClasses[isContentVisable ? 'visible' : 'blurred']
-              "
-            >
-              {{ subTotal }}
-            </p>
-          </span>
+        <!-- Total Element -->
+        <div class="text-center sm:text-right mt-4 sm:mt-0">
+          <p class="text-lg sm:text-2xl text-white font-semibold">Subtotal</p>
+          <p
+            :class="visibiltyClasses[isContentVisable ? 'visible' : 'blurred']"
+          >
+            {{ subTotal }}
+          </p>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Transactions Table -->
-  <div v-if="transactions.length" class="mt-4 overflow-x-auto">
-    <table class="min-w-full bg-gray-800 text-gray-300">
-      <thead>
-        <tr class="bg-gray-900 text-left">
-          <th class="px-6 py-3">Date</th>
-          <th class="px-6 py-3">Symbol</th>
-          <th class="px-6 py-3">Description</th>
-          <th class="px-6 py-3">Quantity</th>
-          <th class="px-6 py-3">Price</th>
-          <th class="px-6 py-3">Amount</th>
-          <th class="px-6 py-3">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="(row, index) in filteredTransactions"
-          :key="index"
-          class="border-b border-gray-700"
-        >
-          <td class="px-6 py-4">{{ row.Date }}</td>
-          <td class="px-6 py-4">{{ row.Symbol }}</td>
-          <td class="px-6 py-4">{{ row.Description }}</td>
-          <td class="px-6 py-4">{{ row.Quantity }}</td>
-          <td class="px-6 py-4">{{ row.Price }}</td>
-          <td class="px-6 py-4">{{ row.Amount }}</td>
-          <td class="px-6 py-4">{{ row.Action }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- Transactions Table -->
+    <div v-if="transactions.length" class="mt-8 overflow-x-auto">
+      <table class="min-w-full bg-gray-800 text-gray-300 rounded-lg">
+        <thead>
+          <tr class="bg-gray-900 text-left">
+            <th class="px-4 sm:px-6 py-3">Date</th>
+            <th class="px-4 sm:px-6 py-3">Symbol</th>
+            <th class="px-4 sm:px-6 py-3">Description</th>
+            <th class="px-4 sm:px-6 py-3">Quantity</th>
+            <th class="px-4 sm:px-6 py-3">Price</th>
+            <th class="px-4 sm:px-6 py-3">Amount</th>
+            <th class="px-4 sm:px-6 py-3">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(row, index) in filteredTransactions"
+            :key="index"
+            class="border-b border-gray-700"
+          >
+            <td class="px-4 sm:px-6 py-4">{{ row.Date }}</td>
+            <td class="px-4 sm:px-6 py-4">{{ row.Symbol }}</td>
+            <td class="px-4 sm:px-6 py-4">{{ row.Description }}</td>
+            <td class="px-4 sm:px-6 py-4">{{ row.Quantity }}</td>
+            <td class="px-4 sm:px-6 py-4">{{ row.Price }}</td>
+            <td class="px-4 sm:px-6 py-4">{{ row.Amount }}</td>
+            <td class="px-4 sm:px-6 py-4">{{ row.Action }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
