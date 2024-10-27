@@ -11,6 +11,8 @@
       >
         Show History
       </button>
+
+      <options-tracker></options-tracker>
     </div>
 
     <account-summary ref="childRef"></account-summary>
@@ -19,11 +21,13 @@
 
 <script lang="ts">
 import AccountSummary from './views/AccountSummary.vue'
+import OptionsTracker from './views/OptionsTracker.vue'
 import { ref } from 'vue'
 
 export default {
   components: {
     AccountSummary,
+    OptionsTracker,
   },
   setup() {
     const childRef = ref(null)
