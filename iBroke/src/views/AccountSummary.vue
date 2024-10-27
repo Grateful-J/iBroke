@@ -94,6 +94,9 @@
 const csJSON = import.meta.env.VITE_CS_HISTORY_DIR
 const fileName = import.meta.env.VITE_CS_FILENAME
 
+// Util import
+import actions from '../utils/actions.ts'
+
 // State for transactions
 import { ref, defineExpose, computed } from 'vue'
 const transactions = ref([])
@@ -103,8 +106,7 @@ const summary = ref({
   totalAmount: 0,
 })
 const selectedTransaction = ref()
-
-//console.log(`option selected: ${selectedTransaction.value}`)
+const isContentVisable = ref()
 
 // Fetch JSON data
 const getHistoryFile = async () => {
@@ -133,25 +135,6 @@ const getHistory = async () => {
 }
 
 defineExpose({ getHistory })
-
-// Predefined types of actions
-const actions = [
-  'All',
-  '-',
-  'Cash Dividend',
-  'Buy to Close',
-  'Buy',
-  'Sell',
-  'Sell to Open',
-  'Sell to Close',
-  'Buy to Open',
-  'Credit Interest',
-  'MoneyLink Transfer',
-  'Expired',
-  'Assigned',
-  'Reinvest Shares',
-  'Reinvest Dividend',
-]
 
 // Maps filteredTransactions and sums the amount
 const priceFactory = data => {
@@ -225,8 +208,6 @@ const subTotal = computed(() => {
 // give suggestions for tax loss harvesting
 
 //Toggle function for sensitive data
-
-const isContentVisable = ref()
 
 const visibiltyClasses = {
   visible: `text-xl text-white`,
