@@ -95,7 +95,7 @@ const csJSON = import.meta.env.VITE_CS_HISTORY_DIR
 const fileName = import.meta.env.VITE_CS_FILENAME
 
 // Util import
-import actions from '../utils/actions.ts'
+import actions from '../utils/actions'
 
 // State for transactions
 import { ref, defineExpose, computed } from 'vue'
