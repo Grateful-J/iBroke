@@ -1,10 +1,11 @@
 <template>
   <div class="text-xl text-white">
-    <h1>Options Tracks</h1>
+    <h1>Options Tracker</h1>
   </div>
 </template>
 
 <script setup lang="ts" name="OptionsTracker">
+console.log(`Options Tracker found`)
 /*
 TODO:
 1 Track Options somehow?

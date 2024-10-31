@@ -1,4 +1,10 @@
 <template>
+  <button
+    @click="getHistory"
+    class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:ring my-2"
+  >
+    Show History
+  </button>
   <div class="p-4 sm:p-6 md:p-8 bg-gray-900 min-h-screen">
     <!-- Summary of Transactions -->
     <div
