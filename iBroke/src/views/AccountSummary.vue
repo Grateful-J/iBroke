@@ -81,13 +81,13 @@
             :key="index"
             class="border-b border-gray-700"
           >
-            <td class="px-4 sm:px-6 py-4">{{ row.Date }}</td>
-            <td class="px-4 sm:px-6 py-4">{{ row.Symbol }}</td>
-            <td class="px-4 sm:px-6 py-4">{{ row.Description }}</td>
-            <td class="px-4 sm:px-6 py-4">{{ row.Quantity }}</td>
-            <td class="px-4 sm:px-6 py-4">{{ row.Price }}</td>
-            <td class="px-4 sm:px-6 py-4">{{ row.Amount }}</td>
-            <td class="px-4 sm:px-6 py-4">{{ row.Action }}</td>
+            <td class="px-4 sm:px-6 py-4">{{ row.Date || '-' }}</td>
+            <td class="px-4 sm:px-6 py-4">{{ row.Symbol || '-' }}</td>
+            <td class="px-4 sm:px-6 py-4">{{ row.Description || '-' }}</td>
+            <td class="px-4 sm:px-6 py-4">{{ row.Quantity || '-' }}</td>
+            <td class="px-4 sm:px-6 py-4">{{ row.Price || '-' }}</td>
+            <td class="px-4 sm:px-6 py-4">{{ row.Amount || '-' }}</td>
+            <td class="px-4 sm:px-6 py-4">{{ row.Action || '-' }}</td>
           </tr>
         </tbody>
       </table>
@@ -143,7 +143,7 @@ const getHistory = async () => {
 defineExpose({ getHistory })
 
 // Maps filteredTransactions and sums the amount
-const priceFactory = data => {
+const priceFactory = (data: { Amount: string }[]) => {
   return data.map(transaction => transaction.Amount)
 }
 
@@ -159,8 +159,18 @@ const calculateTotal = priceArray => {
   }, 0)
 }
 
+interface Transaction {
+  Date: string
+  Symbol: string
+  Description: string
+  Quantity: string
+  Price: string
+  Amount: string
+  Action: string
+}
+
 // Create Filterd Transction Logic
-const filteredTransactions = computed<string>(() => {
+const filteredTransactions = computed<Transaction[]>(() => {
   if (!selectedTransaction.value) {
     return transactions.value
   } else {
