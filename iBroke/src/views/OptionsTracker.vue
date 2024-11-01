@@ -26,6 +26,7 @@
         class="bg-gray-800 p-4 rounded-lg shadow-lg"
       >
         <h3 class="text-xl font-semibold">{{ option.type }}</h3>
+        <h4 class="text-lg font-medium">{{ option.action }}</h4>
         <p>
           Status:
           <span
@@ -66,6 +67,9 @@ const demoOptions = [
     .fill()
     .map((_, index) => ({
       type: ['Call', 'Put'][Math.floor(Math.random() * 2)],
+      action: ['Buy to Close', 'Sell to Open', 'Buy to Open', 'Sell to Close'][
+        Math.floor(Math.random() * 4)
+      ],
       ticker: ['AAPL', 'MSFT', 'GOOG', 'TSLA', 'AMZN', 'NVDA'][
         Math.floor(Math.random() * 6)
       ],
@@ -93,14 +97,16 @@ const filteredOptions = computed(() => {
 })
 
 // State for graph toggle
-const showGraph = ref(false)
+const showGraph = ref(true)
 
 // Function to toggle graph visibility
 const toggleGraph = () => {
-  showGraph.value = !showGraph.value
+  if (showGraph.value) {
+    console.log('Graph will be displayed')
+  } else {
+    console.log('Graph will be hidden')
+  }
 }
-
-console.log(`demoOptions: ${demoOptions[1].type}`)
 
 /*
 TODO:
