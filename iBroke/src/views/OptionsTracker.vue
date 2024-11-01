@@ -26,7 +26,17 @@
         class="bg-gray-800 p-4 rounded-lg shadow-lg"
       >
         <h3 class="text-xl font-semibold">{{ option.type }}</h3>
-        <h4 class="text-lg font-medium">{{ option.action }}</h4>
+        <h4
+          class="text-lg font-medium"
+          :class="
+            option.action === 'Sell to Open' ||
+            option.action === 'Sell to Close'
+              ? 'text-green-400'
+              : 'text-red-400'
+          "
+        >
+          {{ option.action }}
+        </h4>
         <p>
           Status:
           <span
