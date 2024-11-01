@@ -1,36 +1,34 @@
 <template>
-  <button
-    @click="getHistory"
-    class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:ring my-2"
-  >
-    Show History
-  </button>
-  <div class="p-4 sm:p-6 md:p-8 bg-gray-900 min-h-screen">
+  <!-- Account Summary -->
+  <div class="p-4 sm:p-6 md:p-8 bg-gray-900 min-h-screen text-gray-300">
     <!-- Summary of Transactions -->
     <div
       v-if="summary.startDate"
-      class="bg-gray-800 p-6 rounded-lg text-gray-300 space-y-4"
+      class="bg-gray-800 p-6 rounded-lg shadow-lg transition-all duration-300 ease-in-out"
     >
-      <div class="flex flex-col sm:flex-row justify-between items-center">
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
         <p class="text-lg sm:text-xl font-semibold">
-          Start Date: {{ summary.startDate }}
+          Start Date: <span class="text-gray-400">{{ summary.startDate }}</span>
         </p>
         <p class="text-lg sm:text-xl font-semibold">
-          End Date: {{ summary.endDate }}
+          End Date: <span class="text-gray-400">{{ summary.endDate }}</span>
         </p>
       </div>
 
-      <div class="flex flex-col sm:flex-row justify-between items-center mt-4">
+      <div
+        class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-4"
+      >
         <p class="text-lg sm:text-xl font-semibold">
           Total Transactions Amount:
           <span
             :class="visibiltyClasses[isContentVisable ? 'visible' : 'blurred']"
+            class="font-bold text-blue-500"
           >
             {{ summary.totalAmount }}
           </span>
         </p>
         <button
-          class="mt-2 sm:mt-0 bg-gray-600 text-white px-4 py-2 rounded hover:bg-blue-500 focus:ring focus:ring-blue-300"
+          class="mt-2 sm:mt-0 bg-gray-600 text-white px-4 py-2 rounded hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 transition-all duration-300 ease-in-out"
           @click.prevent="isContentVisable = !isContentVisable"
         >
           Show/Hide
@@ -38,11 +36,11 @@
       </div>
 
       <div
-        class="flex flex-col sm:flex-row justify-between items-center mt-6 space-y-4 sm:space-y-0"
+        class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6"
       >
         <select
           v-model="selectedTransaction"
-          class="text-lg sm:text-xl text-gray-100 bg-gray-700 p-2 rounded-md w-full sm:w-auto"
+          class="text-lg sm:text-xl bg-gray-700 p-2 rounded-md shadow-inner w-full sm:w-auto"
         >
           <option v-for="(action, index) in actions" :key="index">
             {{ action }}
@@ -54,6 +52,7 @@
           <p class="text-lg sm:text-2xl text-white font-semibold">Subtotal</p>
           <p
             :class="visibiltyClasses[isContentVisable ? 'visible' : 'blurred']"
+            class="font-bold text-xl"
           >
             {{ subTotal }}
           </p>
@@ -63,23 +62,23 @@
 
     <!-- Transactions Table -->
     <div v-if="transactions.length" class="mt-8 overflow-x-auto">
-      <table class="min-w-full bg-gray-800 text-gray-300 rounded-lg">
-        <thead>
-          <tr class="bg-gray-900 text-left">
-            <th class="px-4 sm:px-6 py-3">Date</th>
-            <th class="px-4 sm:px-6 py-3">Symbol</th>
-            <th class="px-4 sm:px-6 py-3">Description</th>
-            <th class="px-4 sm:px-6 py-3">Quantity</th>
-            <th class="px-4 sm:px-6 py-3">Price</th>
-            <th class="px-4 sm:px-6 py-3">Amount</th>
-            <th class="px-4 sm:px-6 py-3">Action</th>
+      <table class="min-w-full bg-gray-800 text-gray-300 rounded-lg shadow-xl">
+        <thead class="bg-gray-900 text-left">
+          <tr>
+            <th class="px-4 sm:px-6 py-3 font-semibold">Date</th>
+            <th class="px-4 sm:px-6 py-3 font-semibold">Symbol</th>
+            <th class="px-4 sm:px-6 py-3 font-semibold">Description</th>
+            <th class="px-4 sm:px-6 py-3 font-semibold">Quantity</th>
+            <th class="px-4 sm:px-6 py-3 font-semibold">Price</th>
+            <th class="px-4 sm:px-6 py-3 font-semibold">Amount</th>
+            <th class="px-4 sm:px-6 py-3 font-semibold">Action</th>
           </tr>
         </thead>
         <tbody>
           <tr
             v-for="(row, index) in filteredTransactions"
             :key="index"
-            class="border-b border-gray-700"
+            class="border-b border-gray-700 hover:bg-gray-700 transition-colors duration-300 ease-in-out"
           >
             <td class="px-4 sm:px-6 py-4">{{ row.Date || '-' }}</td>
             <td class="px-4 sm:px-6 py-4">{{ row.Symbol || '-' }}</td>
@@ -139,8 +138,9 @@ const getHistory = async () => {
 
   transactions.value = dump.BrokerageTransactions
 }
-
+//Hoisted getHistory to expose ??Delete now functional??
 defineExpose({ getHistory })
+getHistory()
 
 // Maps filteredTransactions and sums the amount
 const priceFactory = (data: { Amount: string }[]) => {
