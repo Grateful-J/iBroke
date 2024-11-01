@@ -20,8 +20,8 @@
     <!-- Options Grid -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <div
-        v-for="option in filteredOptions"
-        :key="option.id"
+        v-for="(option, index) in filteredOptions"
+        :key="index"
         class="bg-gray-800 p-4 rounded-lg shadow-lg"
       >
         <h3 class="text-xl font-semibold">{{ option.type }}</h3>
@@ -60,10 +60,26 @@
 import { ref } from 'vue'
 
 console.log(`Options Tracker found`)
+const demoOptions = [
+  {
+    type: 'Call',
+    ticker: 'AAPL',
+    strike: 100,
+    expiration: '2022-12-31',
+    status: 'open',
+  },
+  {
+    type: 'Put',
+    ticker: 'MSFT',
+    strike: 110,
+    expiration: '2022-12-31',
+    status: 'open',
+  },
+]
 
 // State for ticker selection
 const selectedTicker = ref('')
-const tickers = ref(['AAPL', 'TSLA', 'MSFT', 'GOOG', 'AMZN'])
+const tickers = ref(demoOptions.map(option => option.ticker))
 const filteredOptions = ref([])
 
 // State for graph toggle
@@ -73,6 +89,8 @@ const showGraph = ref(false)
 const toggleGraph = () => {
   showGraph.value = !showGraph.value
 }
+
+console.log(`demoOptions: ${demoOptions[1].type}`)
 
 /*
 TODO:
