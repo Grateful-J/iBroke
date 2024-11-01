@@ -1,11 +1,79 @@
 <template>
-  <div class="text-xl text-white">
-    <h1>Options Tracker</h1>
+  <div class="p-4 md:p-8 bg-gray-900 min-h-screen text-gray-300">
+    <!-- Dropdown for selecting tickers -->
+    <div class="mb-6">
+      <label for="tickerSelect" class="block text-lg font-medium mb-2"
+        >Select Ticker:</label
+      >
+      <select
+        id="tickerSelect"
+        v-model="selectedTicker"
+        class="block w-full bg-gray-700 p-3 rounded-lg focus:ring focus:ring-blue-500"
+      >
+        <option disabled value="">Please select one</option>
+        <option v-for="ticker in tickers" :key="ticker" :value="ticker">
+          {{ ticker }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Options Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div
+        v-for="option in filteredOptions"
+        :key="option.id"
+        class="bg-gray-800 p-4 rounded-lg shadow-lg"
+      >
+        <h3 class="text-xl font-semibold">{{ option.type }}</h3>
+        <p>
+          Status:
+          <span
+            :class="
+              option.status === 'open' ? 'text-green-400' : 'text-red-400'
+            "
+            >{{ option.status }}</span
+          >
+        </p>
+        <p>Strike Price: {{ option.strike }}</p>
+        <p>Expiration: {{ option.expiration }}</p>
+      </div>
+    </div>
+
+    <!-- Graph Section -->
+    <div v-if="showGraph">
+      <button
+        class="mb-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors"
+        @click="toggleGraph"
+      >
+        Toggle Graph
+      </button>
+      <!-- Graph component goes here -->
+      <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
+        <!-- Placeholder for graph -->
+        <p class="text-center text-lg">Graph will be displayed here.</p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts" name="OptionsTracker">
+import { ref } from 'vue'
+
 console.log(`Options Tracker found`)
+
+// State for ticker selection
+const selectedTicker = ref('')
+const tickers = ref(['AAPL', 'TSLA', 'MSFT', 'GOOG', 'AMZN'])
+const filteredOptions = ref([])
+
+// State for graph toggle
+const showGraph = ref(false)
+
+// Function to toggle graph visibility
+const toggleGraph = () => {
+  showGraph.value = !showGraph.value
+}
+
 /*
 TODO:
 1 Track Options somehow?
