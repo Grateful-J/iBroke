@@ -80,7 +80,7 @@ const demoOptions = [
 // State for ticker selection
 const selectedTicker = ref('')
 const tickers = ref(demoOptions.map(option => option.ticker))
-const filteredOptions = ref([])
+const filteredOptions = ref([...demoOptions])
 
 // State for graph toggle
 const showGraph = ref(false)
