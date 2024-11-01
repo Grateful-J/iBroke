@@ -60,57 +60,25 @@
 <script setup lang="ts" name="OptionsTracker">
 import { ref, computed } from 'vue'
 
-console.log(`Options Tracker found`)
 const demoOptions = [
-  {
-    type: 'Call',
-    ticker: 'AAPL',
-    strike: 100,
-    expiration: '2022-12-31',
-    status: 'open',
-  },
-  {
-    type: 'Put',
-    ticker: 'MSFT',
-    strike: 110,
-    expiration: '2022-12-31',
-    status: 'open',
-  },
-  {
-    type: 'Call',
-    ticker: 'GOOG',
-    strike: 120,
-    expiration: '2022-12-31',
-    status: 'open',
-  },
-  {
-    type: 'Put',
-    ticker: 'TSLA',
-    strike: 130,
-    expiration: '2022-12-31',
-    status: 'open',
-  },
-  {
-    type: 'Call',
-    ticker: 'AMZN',
-    strike: 140,
-    expiration: '2022-12-31',
-    status: 'open',
-  },
-  {
-    type: 'Put',
-    ticker: 'NVDA',
-    strike: 150,
-    expiration: '2022-12-31',
-    status: 'open',
-  },
-  {
-    type: 'Put',
-    ticker: 'AAPL',
-    strike: 160,
-    expiration: '2022-12-31',
-    status: 'open',
-  },
+  // Repeated and varied entries to fill up to 100 items
+  ...Array(100)
+    .fill()
+    .map((_, index) => ({
+      type: ['Call', 'Put'][Math.floor(Math.random() * 2)],
+      ticker: ['AAPL', 'MSFT', 'GOOG', 'TSLA', 'AMZN', 'NVDA'][
+        Math.floor(Math.random() * 6)
+      ],
+      strike: Math.floor(Math.random() * 300) + 100, // Random strike price from 100 to 400
+      expiration: `202${Math.floor(index / 33) + 3}-${Math.floor(
+        Math.random() * 12 + 1,
+      )
+        .toString()
+        .padStart(2, '0')}-${Math.floor(Math.random() * 28 + 1)
+        .toString()
+        .padStart(2, '0')}`, // Expiration dates from 2023 to 2025
+      status: ['open', 'closed', 'expired'][Math.floor(Math.random() * 3)],
+    })),
 ]
 
 // State for ticker selection
