@@ -8,6 +8,7 @@
       <select
         id="tickerSelect"
         v-model="selectedTicker"
+        @change="console.log(filteredOptions.length)"
         class="block w-full bg-gray-700 p-3 rounded-lg focus:ring focus:ring-blue-500"
       >
         <option disabled value="">Please select one</option>
@@ -57,7 +58,7 @@
 </template>
 
 <script setup lang="ts" name="OptionsTracker">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 console.log(`Options Tracker found`)
 const demoOptions = [
@@ -75,12 +76,49 @@ const demoOptions = [
     expiration: '2022-12-31',
     status: 'open',
   },
+  {
+    type: 'Call',
+    ticker: 'GOOG',
+    strike: 120,
+    expiration: '2022-12-31',
+    status: 'open',
+  },
+  {
+    type: 'Put',
+    ticker: 'TSLA',
+    strike: 130,
+    expiration: '2022-12-31',
+    status: 'open',
+  },
+  {
+    type: 'Call',
+    ticker: 'AMZN',
+    strike: 140,
+    expiration: '2022-12-31',
+    status: 'open',
+  },
+  {
+    type: 'Put',
+    ticker: 'NVDA',
+    strike: 150,
+    expiration: '2022-12-31',
+    status: 'open',
+  },
+  {
+    type: 'Put',
+    ticker: 'AAPL',
+    strike: 160,
+    expiration: '2022-12-31',
+    status: 'open',
+  },
 ]
 
 // State for ticker selection
 const selectedTicker = ref('')
 const tickers = ref(demoOptions.map(option => option.ticker))
-const filteredOptions = ref([...demoOptions])
+const filteredOptions = computed(() => {
+  return demoOptions.filter(option => option.ticker === selectedTicker.value)
+})
 
 // State for graph toggle
 const showGraph = ref(false)
