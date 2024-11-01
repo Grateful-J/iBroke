@@ -147,8 +147,8 @@ const priceFactory = (data: { Amount: string }[]) => {
   return data.map(transaction => transaction.Amount)
 }
 
-const calculateTotal = priceArray => {
-  const convertAmountStingToNum = amount => {
+const calculateTotal = (priceArray: string[]): number => {
+  const convertAmountStingToNum = (amount: string) => {
     const newFloat = parseFloat(amount.replace(/[^0-9.-]+/g, ''))
     return newFloat
   }
@@ -173,17 +173,23 @@ interface Transaction {
 const filteredTransactions = computed<Transaction[]>(() => {
   if (!selectedTransaction.value) {
     return transactions.value
-  } else {
+  } else if (typeof selectedTransaction.value === 'string') {
     const results = transactions.value.filter(
       transaction => transaction.Action === selectedTransaction.value,
     )
 
     return results
+  } else {
+    console.error(
+      'Invalid selectedTransaction value:',
+      selectedTransaction.value,
+    )
+    return []
   }
 })
 
 // Subtotal formatter: Rounds to the nearest hundredth and adds commas if >$1k
-const totalFormatter = number => {
+const totalFormatter = (number: number) => {
   if (!number || number === 0 || isNaN(number)) {
     return '$0.00'
   } else {
