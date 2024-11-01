@@ -83,7 +83,11 @@ const demoOptions = [
 
 // State for ticker selection
 const selectedTicker = ref('')
-const tickers = ref(demoOptions.map(option => option.ticker))
+const tickers = computed(() => {
+  return demoOptions
+    .map(option => option.ticker)
+    .filter((ticker, index, self) => self.indexOf(ticker) === index)
+})
 const filteredOptions = computed(() => {
   return demoOptions.filter(option => option.ticker === selectedTicker.value)
 })
