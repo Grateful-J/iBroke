@@ -71,6 +71,7 @@
 <script setup lang="ts" name="OptionsTracker">
 import { ref, computed } from 'vue'
 
+// Demo data Generator
 const demoOptions = [
   // Repeated and varied entries to fill up to 100 items
   ...Array(100)
@@ -94,6 +95,131 @@ const demoOptions = [
       status: ['open', 'closed', 'expired'][Math.floor(Math.random() * 3)],
     })),
 ]
+
+// Example Options Data
+interface Option {
+  date: string
+  action: string
+  ticker: string
+  expDate: string
+  strike: string
+  type: string
+  longName: string
+  description: string
+  quantity: string
+  price: string
+  feesAndComm: string
+  amount: string
+}
+
+const dummyOptions: Option[] = [
+  {
+    date: '10/18/2024',
+    action: 'Buy to Close',
+    ticker: 'RKLB',
+    expDate: '10/25/2024',
+    strike: '9.5',
+    type: 'PUT',
+    longName: 'PUT ROCKET LAB USA INC',
+    description: 'PUT ROCKET LAB USA INC $9.5 EXP 10/25/24',
+    quantity: '4',
+    price: '$0.10',
+    feesAndComm: '$2.64',
+    amount: '-$42.64',
+  },
+  {
+    date: '10/18/2024',
+    action: 'Sell to Open',
+    ticker: 'HIMS',
+    expDate: '11/01/2024',
+    strike: '25',
+    type: 'CALL',
+    longName: 'CALL HIMS & HERS HEALTH',
+    description: 'CALL HIMS & HERS HEALTH $25 EXP 11/01/24',
+    quantity: '1',
+    price: '$0.20',
+    feesAndComm: '$0.66',
+    amount: '$19.34',
+  },
+]
+
+const rawData = [
+  {
+    Date: '09/23/2024',
+    Action: 'Sell to Open',
+    Symbol: 'NVDA 10/04/2024 115.00 P',
+    Description: 'PUT NVIDIA CORP $115 EXP 10/04/24',
+    Quantity: '1',
+    Price: '$3.40',
+    'Fees & Comm': '$0.67',
+    Amount: '$339.33',
+  },
+  {
+    Date: '09/23/2024',
+    Action: 'Sell to Open',
+    Symbol: 'ASTS 09/27/2024 25.00 P',
+    Description: 'PUT AST SPACEMOBILE INC $25 EXP 09/27/24',
+    Quantity: '4',
+    Price: '$0.75',
+    'Fees & Comm': '$2.66',
+    Amount: '$297.34',
+  },
+  {
+    Date: '09/23/2024',
+    Action: 'Sell to Open',
+    Symbol: 'ASTS 10/04/2024 30.00 C',
+    Description: 'CALL AST SPACEMOBILE INC$30 EXP 10/04/24',
+    Quantity: '1',
+    Price: '$1.20',
+    'Fees & Comm': '$0.66',
+    Amount: '$119.34',
+  },
+  {
+    Date: '09/23/2024',
+    Action: 'Buy to Close',
+    Symbol: 'SVIX 10/18/2024 23.00 P',
+    Description: 'PUT 1X SHRT VIX FUTRS $23 EXP 10/18/24',
+    Quantity: '2',
+    Price: '$0.50',
+    'Fees & Comm': '$1.32',
+    Amount: '-$101.32',
+  },
+]
+function parseData(rawData: any[]): Option[] {
+  return rawData.map(item => {
+    const symbolDetails = item.Symbol.split(' ')
+    const ticker = symbolDetails[0]
+    const expDate = symbolDetails[1]
+    const strike = symbolDetails[2]
+    const type = symbolDetails[3] === 'P' ? 'PUT' : 'CALL'
+    const longName = item.Description.split(' $')[0] || ''
+
+    return {
+      date: item.Date,
+      action: item.Action,
+      ticker: ticker,
+      expDate: expDate,
+      strike: strike,
+      type: type,
+      longName: longName,
+      description: item.Description,
+      quantity: item.Quantity,
+      price: item.Price,
+      feesAndComm: item['Fees & Comm'], // Accessing using bracket notation due to special characters & whitespace
+      amount: item.Amount,
+    }
+  })
+}
+
+const parsedOptions = ref(parseData(rawData))
+
+const optionsTest = computed(() => {
+  return parsedOptions.value
+})
+
+console.log(optionsTest.value)
+
+console.log(`dummy dummy ${rawData[0].Symbol}`)
 
 // State for ticker selection
 const selectedTicker = ref('')

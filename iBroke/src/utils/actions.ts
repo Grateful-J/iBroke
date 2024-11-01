@@ -16,6 +16,8 @@ const actions = [
   'Assigned',
   'Reinvest Shares',
   'Reinvest Dividend',
+  'Stock Split',
+  'Qualified Dividend',
 ]
 
 export default actions
