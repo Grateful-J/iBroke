@@ -46,7 +46,7 @@
             >{{ option.status }}</span
           >
         </p>
-        <p>Strike Price: {{ option.strike }}</p>
+        <p>Strike Price: ${{ option.strike }}</p>
         <p>Expiration: {{ option.expiration }}</p>
       </div>
     </div>
