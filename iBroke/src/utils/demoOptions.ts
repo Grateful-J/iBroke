@@ -2,7 +2,7 @@
 const demoOptions = [
   // Repeated and varied entries to fill up to 100 items
   ...Array(100)
-    .fill()
+    .fill({})
     .map((_, index) => ({
       type: ['Call', 'Put'][Math.floor(Math.random() * 2)],
       action: ['Buy to Close', 'Sell to Open', 'Buy to Open', 'Sell to Close'][
