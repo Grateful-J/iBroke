@@ -82,31 +82,6 @@
 <script setup lang="ts" name="OptionsTracker">
 import { ref, onMounted, computed } from 'vue'
 
-// Demo data Generator
-const demoOptions = [
-  // Repeated and varied entries to fill up to 100 items
-  ...Array(100)
-    .fill()
-    .map((_, index) => ({
-      type: ['Call', 'Put'][Math.floor(Math.random() * 2)],
-      action: ['Buy to Close', 'Sell to Open', 'Buy to Open', 'Sell to Close'][
-        Math.floor(Math.random() * 4)
-      ],
-      ticker: ['AAPL', 'MSFT', 'GOOG', 'TSLA', 'AMZN', 'NVDA'][
-        Math.floor(Math.random() * 6)
-      ],
-      strike: Math.floor(Math.random() * 300) + 100, // Random strike price from 100 to 400
-      expiration: `202${Math.floor(index / 33) + 3}-${Math.floor(
-        Math.random() * 12 + 1,
-      )
-        .toString()
-        .padStart(2, '0')}-${Math.floor(Math.random() * 28 + 1)
-        .toString()
-        .padStart(2, '0')}`, // Expiration dates from 2023 to 2025
-      status: ['open', 'closed', 'expired'][Math.floor(Math.random() * 3)],
-    })),
-]
-
 // Example Options Data
 interface Option {
   date: string
@@ -127,33 +102,11 @@ interface Option {
 const csJSON = import.meta.env.VITE_CS_HISTORY_DIR
 const fileName = import.meta.env.VITE_CS_FILENAME
 
-/* const demoJSON = async () => {
-  try {
-    const response = await fetch(`${csJSON}/${fileName}`)
-    const rawData = await response.json()
-
-    console.log(`Raw Data: ${rawData.length}`)
-
-    const optionData = rawData.filter(item =>
-      ['Buy to Close', 'Sell to Open', 'Sell to Close', 'Buy to Open'].includes(
-        item.Action,
-      ),
-    )
-    console.log(`Raw Data: ${optionData}`)
-    return optionData
-  } catch (error) {
-    console.error('Failed to load options:', error)
-    return []
-  }
-} */
-
 // Fetch and process JSON data
 const fetchOptionsData = async () => {
   try {
     const response = await fetch(`${csJSON}/${fileName}`)
     const rawDataz = await response.json()
-
-    //console.log(`Raw Data Amount: ${rawDataz.TotalTransactionsAmount}`)
 
     const optionData = rawDataz.BrokerageTransactions.filter((item: any) =>
       ['Buy to Close', 'Sell to Open', 'Sell to Close', 'Buy to Open'].includes(
@@ -193,7 +146,6 @@ const parseData = (data: any[]): Option[] => {
   })
 }
 
-// const parsedOptions = ref<Option[]>([])
 const parsedOptions = ref([])
 
 onMounted(async () => {
@@ -206,8 +158,6 @@ const optionsTest = computed(() => {
   return parsedOptions.value
 })
 
-//console.log(`optionsTest.value: ${optionsTest.value}`)
-
 // State for ticker selection
 const selectedTicker = ref('')
 const tickers = computed(() => {
@@ -219,7 +169,9 @@ const tickers = computed(() => {
 const filteredOptions = computed(() => {
   return optionsTest.value
     .filter(option => option.ticker === selectedTicker.value)
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .sort(
+      (a, b) => new Date(a.expDate).getTime() - new Date(b.expDate).getTime(),
+    )
 })
 
 // State for graph toggle
