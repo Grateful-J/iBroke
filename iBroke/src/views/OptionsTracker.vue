@@ -206,7 +206,9 @@ const tickers = computed(() => {
     .filter((ticker, index, self) => self.indexOf(ticker) === index)
 })
 const filteredOptions = computed(() => {
-  return demoOptions.filter(option => option.ticker === selectedTicker.value)
+  return optionsTest.value.filter(
+    option => option.ticker === selectedTicker.value,
+  )
 })
 
 // State for graph toggle
