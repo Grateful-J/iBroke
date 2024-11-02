@@ -69,7 +69,7 @@
 </template>
 
 <script setup lang="ts" name="OptionsTracker">
-import { ref, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 // Demo data Generator
 const demoOptions = [
@@ -112,81 +112,52 @@ interface Option {
   amount: string
 }
 
-const dummyOptions: Option[] = [
-  {
-    date: '10/18/2024',
-    action: 'Buy to Close',
-    ticker: 'RKLB',
-    expDate: '10/25/2024',
-    strike: '9.5',
-    type: 'PUT',
-    longName: 'PUT ROCKET LAB USA INC',
-    description: 'PUT ROCKET LAB USA INC $9.5 EXP 10/25/24',
-    quantity: '4',
-    price: '$0.10',
-    feesAndComm: '$2.64',
-    amount: '-$42.64',
-  },
-  {
-    date: '10/18/2024',
-    action: 'Sell to Open',
-    ticker: 'HIMS',
-    expDate: '11/01/2024',
-    strike: '25',
-    type: 'CALL',
-    longName: 'CALL HIMS & HERS HEALTH',
-    description: 'CALL HIMS & HERS HEALTH $25 EXP 11/01/24',
-    quantity: '1',
-    price: '$0.20',
-    feesAndComm: '$0.66',
-    amount: '$19.34',
-  },
-]
+// Environment Variables for brokerage statements
+const csJSON = import.meta.env.VITE_CS_HISTORY_DIR
+const fileName = import.meta.env.VITE_CS_FILENAME
 
-const rawData = [
-  {
-    Date: '09/23/2024',
-    Action: 'Sell to Open',
-    Symbol: 'NVDA 10/04/2024 115.00 P',
-    Description: 'PUT NVIDIA CORP $115 EXP 10/04/24',
-    Quantity: '1',
-    Price: '$3.40',
-    'Fees & Comm': '$0.67',
-    Amount: '$339.33',
-  },
-  {
-    Date: '09/23/2024',
-    Action: 'Sell to Open',
-    Symbol: 'ASTS 09/27/2024 25.00 P',
-    Description: 'PUT AST SPACEMOBILE INC $25 EXP 09/27/24',
-    Quantity: '4',
-    Price: '$0.75',
-    'Fees & Comm': '$2.66',
-    Amount: '$297.34',
-  },
-  {
-    Date: '09/23/2024',
-    Action: 'Sell to Open',
-    Symbol: 'ASTS 10/04/2024 30.00 C',
-    Description: 'CALL AST SPACEMOBILE INC$30 EXP 10/04/24',
-    Quantity: '1',
-    Price: '$1.20',
-    'Fees & Comm': '$0.66',
-    Amount: '$119.34',
-  },
-  {
-    Date: '09/23/2024',
-    Action: 'Buy to Close',
-    Symbol: 'SVIX 10/18/2024 23.00 P',
-    Description: 'PUT 1X SHRT VIX FUTRS $23 EXP 10/18/24',
-    Quantity: '2',
-    Price: '$0.50',
-    'Fees & Comm': '$1.32',
-    Amount: '-$101.32',
-  },
-]
-function parseData(rawData: any[]): Option[] {
-  return rawData.map(item => {
+/* const demoJSON = async () => {
+  try {
+    const response = await fetch(`${csJSON}/${fileName}`)
+    const rawData = await response.json()
+
+    console.log(`Raw Data: ${rawData.length}`)
+
+    const optionData = rawData.filter(item =>
+      ['Buy to Close', 'Sell to Open', 'Sell to Close', 'Buy to Open'].includes(
+        item.Action,
+      ),
+    )
+    console.log(`Raw Data: ${optionData}`)
+    return optionData
+  } catch (error) {
+    console.error('Failed to load options:', error)
+    return []
+  }
+} */
+
+// Fetch and process JSON data
+const fetchOptionsData = async () => {
+  try {
+    const response = await fetch(`${csJSON}/${fileName}`)
+    const rawDataz = await response.json()
+
+    //console.log(`Raw Data Amount: ${rawDataz.TotalTransactionsAmount}`)
+
+    const optionData = rawDataz.BrokerageTransactions.filter((item: any) =>
+      ['Buy to Close', 'Sell to Open', 'Sell to Close', 'Buy to Open'].includes(
+        item.Action,
+      ),
+    )
+    return optionData
+  } catch (error) {
+    console.error('Failed to load options:', error)
+    return [] // Return an empty array in case of an error
+  }
+}
+
+const parseData = (data: any[]): Option[] => {
+  return data.map(item => {
     const symbolDetails = item.Symbol.split(' ')
     const ticker = symbolDetails[0]
     const expDate = symbolDetails[1]
@@ -211,20 +182,26 @@ function parseData(rawData: any[]): Option[] {
   })
 }
 
-const parsedOptions = ref(parseData(rawData))
+// const parsedOptions = ref<Option[]>([])
+const parsedOptions = ref([])
+
+onMounted(async () => {
+  const rawData = ref([])
+  rawData.value = await fetchOptionsData()
+  parsedOptions.value = parseData(rawData.value)
+})
 
 const optionsTest = computed(() => {
   return parsedOptions.value
 })
 
-console.log(optionsTest.value)
-
-console.log(`dummy dummy ${rawData[0].Symbol}`)
+//console.log(`optionsTest.value: ${optionsTest.value}`)
 
 // State for ticker selection
 const selectedTicker = ref('')
 const tickers = computed(() => {
-  return demoOptions
+  //return demoOptions
+  return optionsTest.value
     .map(option => option.ticker)
     .filter((ticker, index, self) => self.indexOf(ticker) === index)
 })
