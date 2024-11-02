@@ -18,40 +18,47 @@
       </select>
     </div>
 
-    <!-- Options Grid -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <div
         v-for="(option, index) in filteredOptions"
         :key="index"
-        class="bg-gray-800 p-4 rounded-lg shadow-lg"
+        class="bg-gray-800 p-4 rounded-lg shadow-lg transform transition-all hover:scale-105 cursor-pointer"
+        @click="option.expanded = !option.expanded"
       >
-        <h3 class="text-xl font-semibold">{{ option.type }}</h3>
-        <h4
-          class="text-lg font-medium"
-          :class="
-            option.action === 'Sell to Open' ||
-            option.action === 'Sell to Close'
-              ? 'text-green-400'
-              : 'text-red-400'
-          "
-        >
-          {{ option.action }}
-        </h4>
-        <p>
-          Status:
-          <span
+        <!-- Reduced Card View -->
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-xl font-semibold">{{ option.type }}</h3>
+            <h4
+              class="text-lg"
+              :class="
+                option.action.includes('Sell')
+                  ? 'text-green-400'
+                  : 'text-red-400'
+              "
+            >
+              {{ option.action }}
+            </h4>
+          </div>
+          <p
+            class="text-2xl font-bold"
             :class="
-              option.status === 'open' ? 'text-green-400' : 'text-red-400'
+              option.amount.includes('-') ? 'text-red-400' : 'text-green-400'
             "
-            >{{ option.status }}</span
           >
-        </p>
-        <p>Strike Price: ${{ option.strike }}</p>
-        <p>Expiration: {{ option.expiration }}</p>
-        <p>Quantity: {{ option.quantity }}</p>
-        <p>Price: ${{ option.price }}</p>
-        <p>Fees & Comm: ${{ option.feesAndComm }}</p>
-        <p>Amount: ${{ option.amount }}</p>
+            {{ option.amount }}
+          </p>
+        </div>
+
+        <!-- Expandable Details Section -->
+        <div v-if="option.expanded" class="mt-4 space-y-2">
+          <p>Description: {{ option.description }}</p>
+          <p>Strike Price: ${{ option.strike }}</p>
+          <p>Expiration: {{ option.expDate }}</p>
+          <p>Quantity: {{ option.quantity }}</p>
+          <p>Price: {{ option.price }}</p>
+          <p>Fees & Comm: {{ option.feesAndComm }}</p>
+        </div>
       </div>
     </div>
 
@@ -210,9 +217,9 @@ const tickers = computed(() => {
     .filter((ticker, index, self) => self.indexOf(ticker) === index)
 })
 const filteredOptions = computed(() => {
-  return optionsTest.value.filter(
-    option => option.ticker === selectedTicker.value,
-  )
+  return optionsTest.value
+    .filter(option => option.ticker === selectedTicker.value)
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 })
 
 // State for graph toggle
