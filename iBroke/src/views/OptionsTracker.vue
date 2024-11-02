@@ -48,6 +48,10 @@
         </p>
         <p>Strike Price: ${{ option.strike }}</p>
         <p>Expiration: {{ option.expiration }}</p>
+        <p>Quantity: {{ option.quantity }}</p>
+        <p>Price: ${{ option.price }}</p>
+        <p>Fees & Comm: ${{ option.feesAndComm }}</p>
+        <p>Amount: ${{ option.amount }}</p>
       </div>
     </div>
 
