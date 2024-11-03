@@ -19,7 +19,7 @@
 
       <div class="text-center sm:text-right mt-4 sm:mt-0">
         <p class="text-lg sm:text-2xl text-white font-semibold">Subtotal</p>
-        <p class="font-bold text-xl">{{ totalAmount.toFixed(2) }}</p>
+        <p class="font-bold text-xl">{{ totalFormatter(totalAmount) }}</p>
       </div>
     </div>
 
@@ -193,11 +193,11 @@ const filteredOptions = computed(() => {
 
 // State for running total of option Amount Value
 const totalAmount = ref(0)
+import { totalFormatter } from '../utils/currencyHelper'
 
 const calculateTotal = (amounts: number[]) => {
   const total = amounts.reduce((total, amount) => total + amount, 0)
   console.log(`total: ${total}`)
-
   totalAmount.value = total
   return total
 }
