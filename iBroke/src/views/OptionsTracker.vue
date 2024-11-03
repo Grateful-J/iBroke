@@ -140,6 +140,20 @@ const parseData = (data: any[]): Option[] => {
     const formattedExpDate = new Date(expDate)
     const formattedNow = new Date()
 
+    const negative = item.Amount.trim().startsWith('-')
+    const positive = item.Amount.trim().startsWith('$')
+
+    if (negative) {
+      item.Amount = item.Amount.trim().slice(1)
+      item.Amount = '-' + item.Amount
+    } else if (positive) {
+      item.Amount = item.Amount.trim().slice(1)
+    }
+
+    console.log(`negative: ${negative}`)
+    console.log(`positive: ${positive}`)
+    console.log(`item.Amount: ${item.Amount}`)
+
     //console.log(`formattedDate: ${formattedExpDate}`)
 
     //helper to see if date is in the future
@@ -180,6 +194,23 @@ const optionsTest = computed(() => {
   return parsedOptions.value
 })
 
+const netGains = computed(() => {
+  return optionsTest.value.reduce((total, option) => {
+    if (option.amount) {
+      console.log(option.amount)
+      const negative = option.amount.trim().startsWith('-')
+      const positive = option.amount.trim().startsWith('+')
+
+      if (negative) {
+        total -= parseFloat(option.amount.trim().slice(1))
+      } else if (positive) {
+        total += parseFloat(option.amount.trim().slice(1))
+      }
+    }
+    return total
+  }, 0)
+})
+
 // State for ticker selection
 const selectedTicker = ref('')
 const tickers = computed(() => {
@@ -203,6 +234,7 @@ const showGraph = ref(true)
 const toggleGraph = () => {
   if (showGraph.value) {
     console.log('Graph will be displayed')
+    console.log(`netGains: ${netGains.value}`)
   } else {
     console.log('Graph will be hidden')
   }
