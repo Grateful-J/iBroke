@@ -17,6 +17,20 @@
         </option>
       </select>
 
+      <!-- JSON picker -->
+      <div class="mt-4">
+        <label for="fileItem" class="block text-lg font-medium mb-2 mt-4"
+          >Select JSON file:</label
+        >
+        <input id="fileItem" type="file" />
+        <button
+          @click="uploadFile"
+          class="mt-4 bg-gray-600 text-white px-4 py-2 rounded hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 transition-all duration-300 ease-in-out"
+        >
+          Upload
+        </button>
+      </div>
+
       <div class="text-center sm:text-right mt-4 sm:mt-0">
         <p class="text-lg sm:text-2xl text-white font-semibold">Subtotal</p>
         <p class="font-bold text-xl">{{ totalFormatter(totalAmount) }}</p>
@@ -119,6 +133,38 @@ const fileName = import.meta.env.VITE_CS_FILENAME
 
 const parsedOptions = ref<Option[]>([]) // State for options data
 
+const selectedJSON = ref('') // State for selected JSON file
+const JSONs = ref([]) // State for available JSON files
+
+// Function to upload JSON file
+const uploadFile = () => {
+  const fileInput = document.getElementById('fileItem') as HTMLInputElement
+  const file = fileInput.files?.[0]
+  if (file) {
+    selectedJSON.value = file.name
+    const reader = new FileReader()
+    reader.onload = () => {
+      const data = reader.result
+      if (data) {
+        JSONs.value = JSON.parse(data.toString())
+        const optionData = JSONs.value.BrokerageTransactions.filter(
+          (item: any) =>
+            [
+              'Buy to Close',
+              'Sell to Open',
+              'Sell to Close',
+              'Buy to Open',
+            ].includes(item.Action),
+        )
+        parsedOptions.value = parseData(optionData)
+      }
+    }
+    reader.readAsText(file)
+  } else {
+    console.error('No file selected')
+  }
+}
+
 // Fetch and process JSON data
 const fetchOptionsData = async () => {
   try {
@@ -198,26 +244,7 @@ import { totalFormatter } from '../utils/currencyHelper'
 const calculateTotal = (amounts: number[]) => {
   const total = amounts.reduce((total, amount) => total + amount, 0)
   console.log(`total: ${total}`)
-  totalAmount.value = total
   return total
-}
-
-const subTotal = ref(100)
-
-// Test logic
-const totalTimer = () => {
-  let total = 0
-
-  let interval = setInterval(() => {
-    total += 100
-    console.log(total)
-    subTotal.value = total
-    if (total >= 1000) {
-      clearInterval(interval)
-    }
-  }, 1000)
-
-  return subTotal
 }
 
 // State for graph toggle
@@ -227,7 +254,6 @@ const showGraph = ref(true)
 const toggleGraph = () => {
   if (showGraph.value) {
     console.log('Graph will be displayed')
-    totalTimer()
   } else {
     console.log('Graph will be hidden')
   }
@@ -235,12 +261,7 @@ const toggleGraph = () => {
 
 /*
 TODO:
-1 Track Options somehow?
-2 map an object of arrays?
-  > one for each action
-3 Keep a running total of options revenue
-4 earning plays: Sell to Open, Sell to Close
-5 negative plays: Buy to Close, Buy to Open
+
 6 Track options:
   if an Open action is made, kepe track of the underlying asset
   if a Close action is made, refrence expiration date of open order and close
