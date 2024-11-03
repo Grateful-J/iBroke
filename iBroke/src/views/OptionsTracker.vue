@@ -192,7 +192,7 @@ const filteredOptions = computed(() => {
   return optionsTest.value
     .filter(option => option.ticker === selectedTicker.value)
     .sort(
-      (a, b) => new Date(a.expDate).getTime() - new Date(b.expDate).getTime(),
+      (a, b) => new Date(b.expDate).getTime() - new Date(a.expDate).getTime(),
     )
 })
 
