@@ -101,11 +101,11 @@ interface Option {
   action: string
   ticker: string
   expDate: string
-  strike: string
+  strike: number
   type: string
   longName: string
   description: string
-  quantity: string
+  quantity: number
   price: number
   feesAndComm: number
   amount: number
@@ -157,7 +157,7 @@ const parseData = (data: any[]): Option[] => {
       action: item.Action,
       ticker: ticker,
       expDate: expDate,
-      strike: strike,
+      strike: parseFloat(strike.replace(/[$,]/g, '')),
       type: type,
       longName: longName,
       description: item.Description,
