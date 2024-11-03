@@ -106,8 +106,8 @@ interface Option {
   longName: string
   description: string
   quantity: string
-  price: string
-  feesAndComm: string
+  price: number
+  feesAndComm: number
   amount: number
   expanded: boolean
   status: boolean
@@ -162,8 +162,8 @@ const parseData = (data: any[]): Option[] => {
       longName: longName,
       description: item.Description,
       quantity: item.Quantity,
-      price: item.Price,
-      feesAndComm: item['Fees & Comm'], // Accessing using bracket notation due to special characters & whitespace
+      price: parseFloat(item.Price.replace(/[$,]/g, '')),
+      feesAndComm: parseFloat(item['Fees & Comm'].replace(/[$,]/g, '')), // Accessing using bracket notation due to special characters & whitespace
       amount: parseFloat(item.Amount.replace(/[$,]/g, '')),
       status: status,
     }
