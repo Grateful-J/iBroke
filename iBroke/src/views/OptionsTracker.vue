@@ -8,7 +8,7 @@
       <select
         id="tickerSelect"
         v-model="selectedTicker"
-        @change="console.log(filteredOptions.length)"
+        @change="calculateTotal(filteredOptions.map(option => option.amount))"
         class="block w-full bg-gray-700 p-3 rounded-lg focus:ring focus:ring-blue-500"
       >
         <option disabled value="">Please select one</option>
@@ -16,6 +16,11 @@
           {{ ticker }}
         </option>
       </select>
+
+      <div class="text-center sm:text-right mt-4 sm:mt-0">
+        <p class="text-lg sm:text-2xl text-white font-semibold">Subtotal</p>
+        <p class="font-bold text-xl">{{ totalAmount.toFixed(2) }}</p>
+      </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -112,6 +117,8 @@ interface Option {
 const csJSON = import.meta.env.VITE_CS_HISTORY_DIR
 const fileName = import.meta.env.VITE_CS_FILENAME
 
+const parsedOptions = ref<Option[]>([]) // State for options data
+
 // Fetch and process JSON data
 const fetchOptionsData = async () => {
   try {
@@ -130,6 +137,7 @@ const fetchOptionsData = async () => {
   }
 }
 
+// Parse JSON data
 const parseData = (data: any[]): Option[] => {
   return data.map(item => {
     const symbolDetails = item.Symbol.split(' ')
@@ -162,43 +170,55 @@ const parseData = (data: any[]): Option[] => {
   })
 }
 
-const parsedOptions = ref([])
-
-console.log(new Date().toISOString().split('T')[0])
-
 onMounted(async () => {
   const rawData = ref([])
   rawData.value = await fetchOptionsData()
   parsedOptions.value = parseData(rawData.value)
 })
 
-const optionsTest = computed(() => {
-  return parsedOptions.value
-})
-
-/* const netGains = computed(() => {
-  return optionsTest.value
-    .filter(option => option.status)
-    .reduce((acc, option) => acc + option.amount, 0)
-})
-
-console.log(netGains) */
-
 // State for ticker selection
 const selectedTicker = ref('')
 const tickers = computed(() => {
-  //return demoOptions
-  return optionsTest.value
+  return parsedOptions.value
     .map(option => option.ticker)
     .filter((ticker, index, self) => self.indexOf(ticker) === index)
 })
 const filteredOptions = computed(() => {
-  return optionsTest.value
+  return parsedOptions.value
     .filter(option => option.ticker === selectedTicker.value)
     .sort(
       (a, b) => new Date(b.expDate).getTime() - new Date(a.expDate).getTime(),
     )
 })
+
+// State for running total of option Amount Value
+const totalAmount = ref(0)
+
+const calculateTotal = (amounts: number[]) => {
+  const total = amounts.reduce((total, amount) => total + amount, 0)
+  console.log(`total: ${total}`)
+
+  totalAmount.value = total
+  return total
+}
+
+const subTotal = ref(100)
+
+// Test logic
+const totalTimer = () => {
+  let total = 0
+
+  let interval = setInterval(() => {
+    total += 100
+    console.log(total)
+    subTotal.value = total
+    if (total >= 1000) {
+      clearInterval(interval)
+    }
+  }, 1000)
+
+  return subTotal
+}
 
 // State for graph toggle
 const showGraph = ref(true)
@@ -207,6 +227,7 @@ const showGraph = ref(true)
 const toggleGraph = () => {
   if (showGraph.value) {
     console.log('Graph will be displayed')
+    totalTimer()
   } else {
     console.log('Graph will be hidden')
   }
