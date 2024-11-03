@@ -188,7 +188,7 @@ const filteredTransactions = computed<Transaction[]>(() => {
   }
 })
 
-// Subtotal formatter: Rounds to the nearest hundredth and adds commas if >$1k
+/* // Subtotal formatter: Rounds to the nearest hundredth and adds commas if >$1k
 const totalFormatter = (number: number) => {
   if (!number || number === 0 || isNaN(number)) {
     return '$0.00'
@@ -204,7 +204,9 @@ const totalFormatter = (number: number) => {
     // Add back the negative sign if applicable and return with '$' sign
     return `${isNegative ? '-' : ''}$${formattedNumber}`
   }
-}
+} */
+
+import { totalFormatter } from '../utils/currencyHelper'
 
 const subTotal = computed(() => {
   const amounts = priceFactory(filteredTransactions.value)
