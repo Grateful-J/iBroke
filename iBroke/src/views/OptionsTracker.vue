@@ -43,7 +43,8 @@
           <p
             class="text-2xl font-bold"
             :class="
-              option.amount.includes('-') ? 'text-red-400' : 'text-green-400'
+              option.amount < 0 ? 'text-red-400' : 'text-green-400'
+              //option.status ? 'text-green-400' : 'text-red-400'
             "
           >
             {{ option.amount }}
@@ -102,7 +103,7 @@ interface Option {
   quantity: string
   price: string
   feesAndComm: string
-  amount: string
+  amount: number
   expanded: boolean
   status: boolean
 }
@@ -140,27 +141,8 @@ const parseData = (data: any[]): Option[] => {
     const formattedExpDate = new Date(expDate)
     const formattedNow = new Date()
 
-    const negative = item.Amount.trim().startsWith('-')
-    const positive = item.Amount.trim().startsWith('$')
-
-    if (negative) {
-      item.Amount = item.Amount.trim().slice(1)
-      item.Amount = '-' + item.Amount
-    } else if (positive) {
-      item.Amount = item.Amount.trim().slice(1)
-    }
-
-    console.log(`negative: ${negative}`)
-    console.log(`positive: ${positive}`)
-    console.log(`item.Amount: ${item.Amount}`)
-
-    //console.log(`formattedDate: ${formattedExpDate}`)
-
     //helper to see if date is in the future
     const status = formattedExpDate > formattedNow
-
-    //console.log(`todays date is: ${formattedNow}`)
-    //console.log(`status: ${status}`)
 
     return {
       date: item.Date,
@@ -174,7 +156,7 @@ const parseData = (data: any[]): Option[] => {
       quantity: item.Quantity,
       price: item.Price,
       feesAndComm: item['Fees & Comm'], // Accessing using bracket notation due to special characters & whitespace
-      amount: item.Amount,
+      amount: parseFloat(item.Amount.replace(/[$,]/g, '')),
       status: status,
     }
   })
@@ -194,22 +176,13 @@ const optionsTest = computed(() => {
   return parsedOptions.value
 })
 
-const netGains = computed(() => {
-  return optionsTest.value.reduce((total, option) => {
-    if (option.amount) {
-      console.log(option.amount)
-      const negative = option.amount.trim().startsWith('-')
-      const positive = option.amount.trim().startsWith('+')
-
-      if (negative) {
-        total -= parseFloat(option.amount.trim().slice(1))
-      } else if (positive) {
-        total += parseFloat(option.amount.trim().slice(1))
-      }
-    }
-    return total
-  }, 0)
+/* const netGains = computed(() => {
+  return optionsTest.value
+    .filter(option => option.status)
+    .reduce((acc, option) => acc + option.amount, 0)
 })
+
+console.log(netGains) */
 
 // State for ticker selection
 const selectedTicker = ref('')
@@ -234,7 +207,6 @@ const showGraph = ref(true)
 const toggleGraph = () => {
   if (showGraph.value) {
     console.log('Graph will be displayed')
-    console.log(`netGains: ${netGains.value}`)
   } else {
     console.log('Graph will be hidden')
   }
