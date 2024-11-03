@@ -58,6 +58,13 @@
           <p>Quantity: {{ option.quantity }}</p>
           <p>Price: {{ option.price }}</p>
           <p>Fees & Comm: {{ option.feesAndComm }}</p>
+
+          <p
+            class="text-sm font-bold"
+            :class="option.status ? 'text-green-400' : 'text-red-400'"
+          >
+            {{ option.status ? 'Status: Active' : 'Status: Expired' }}
+          </p>
         </div>
       </div>
     </div>
@@ -96,6 +103,8 @@ interface Option {
   price: string
   feesAndComm: string
   amount: string
+  expanded: boolean
+  status: boolean
 }
 
 // Environment Variables for brokerage statements
@@ -128,6 +137,16 @@ const parseData = (data: any[]): Option[] => {
     const strike = symbolDetails[2]
     const type = symbolDetails[3] === 'P' ? 'PUT' : 'CALL'
     const longName = item.Description.split(' $')[0] || ''
+    const formattedExpDate = new Date(expDate)
+    const formattedNow = new Date()
+
+    //console.log(`formattedDate: ${formattedExpDate}`)
+
+    //helper to see if date is in the future
+    const status = formattedExpDate > formattedNow
+
+    //console.log(`todays date is: ${formattedNow}`)
+    //console.log(`status: ${status}`)
 
     return {
       date: item.Date,
@@ -142,11 +161,14 @@ const parseData = (data: any[]): Option[] => {
       price: item.Price,
       feesAndComm: item['Fees & Comm'], // Accessing using bracket notation due to special characters & whitespace
       amount: item.Amount,
+      status: status,
     }
   })
 }
 
 const parsedOptions = ref([])
+
+console.log(new Date().toISOString().split('T')[0])
 
 onMounted(async () => {
   const rawData = ref([])
