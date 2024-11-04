@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+//import '@tailwindcss/primeui'
 export default {
   content: ['./public/**/*.html', './src/**/*.{js,jsx,ts,tsx,vue}'],
   theme: {
@@ -13,5 +14,5 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [require('tailwindcss-primeui')],
 }
