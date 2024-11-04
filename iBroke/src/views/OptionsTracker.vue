@@ -18,17 +18,55 @@
       </select>
 
       <!-- JSON picker -->
+
       <div class="mt-4">
         <label for="fileItem" class="block text-lg font-medium mb-2 mt-4"
           >Select JSON file:</label
         >
-        <input id="fileItem" type="file" />
+        <!--         <input id="fileItem" type="file" />
         <button
           @click="uploadFile"
           class="mt-4 bg-gray-600 text-white px-4 py-2 rounded hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 transition-all duration-300 ease-in-out"
         >
           Upload
-        </button>
+        </button> -->
+
+        <FileUpload
+          name="demo[]"
+          url="/options"
+          @upload.prevent="uploadFile"
+          :multiple="true"
+          accept="application/json"
+          :maxFileSize="1000000"
+          id="fileInput"
+        >
+          <template #empty>
+            <div
+              class="flex flex-col items-center justify-center h-full border-white border-2"
+            >
+              <span class="text-gray-400 m-6"
+                >Drag and drop files to here to upload.</span
+              >
+            </div>
+          </template>
+        </FileUpload>
+      </div>
+      <div class="card flex justify-center">
+        <Toast />
+        <div class="flex flex-wrap gap-2">
+          <Button label="Success" severity="success" @click="showSuccess">
+            Sucess</Button
+          >
+          <Button label="Info" severity="info" @click="showInfo" />
+          <Button label="Warn" severity="warn" @click="showWarn" />
+          <Button label="Error" severity="danger" @click="showError" />
+          <Button
+            label="Secondary"
+            severity="secondary"
+            @click="showSecondary"
+          />
+          <Button label="Contrast" severity="contrast" @click="showContrast" />
+        </div>
       </div>
 
       <div class="text-center sm:text-right mt-4 sm:mt-0">
@@ -136,9 +174,11 @@ const parsedOptions = ref<Option[]>([]) // State for options data
 const selectedJSON = ref('') // State for selected JSON file
 const JSONs = ref([]) // State for available JSON files
 
+import FileUpload from 'primevue/fileupload'
+
 // Function to upload JSON file
 const uploadFile = () => {
-  const fileInput = document.getElementById('fileItem') as HTMLInputElement
+  const fileInput = document.getElementById('fileInput') as HTMLInputElement
   const file = fileInput.files?.[0]
   if (file) {
     selectedJSON.value = file.name
@@ -257,6 +297,78 @@ const toggleGraph = () => {
   } else {
     console.log('Graph will be hidden')
   }
+}
+
+// Toast function
+import Toast from 'primevue/toast'
+import { useToast } from 'primevue/usetoast'
+
+const toast = useToast()
+
+const showTemplate = () => {
+  console.log('You clicked the template button')
+  toast.add({
+    severity: 'info',
+    summary: 'Template',
+    detail: 'This is a template',
+    position: 'top-right',
+  })
+
+  console.log('Toast added')
+}
+
+const showSuccess = () => {
+  toast.add({
+    severity: 'success',
+    summary: 'Success Message',
+    detail: 'Message Content',
+    life: 3000,
+  })
+}
+
+const showInfo = () => {
+  toast.add({
+    severity: 'info',
+    summary: 'Info Message',
+    detail: 'Message Content',
+    life: 3000,
+  })
+}
+
+const showWarn = () => {
+  toast.add({
+    severity: 'warn',
+    summary: 'Warn Message',
+    detail: 'Message Content',
+    life: 3000,
+  })
+}
+
+const showError = () => {
+  toast.add({
+    severity: 'error',
+    summary: 'Error Message',
+    detail: 'Message Content',
+    life: 3000,
+  })
+}
+
+const showSecondary = () => {
+  toast.add({
+    severity: 'secondary',
+    summary: 'Secondary Message',
+    detail: 'Message Content',
+    life: 3000,
+  })
+}
+
+const showContrast = () => {
+  toast.add({
+    severity: 'contrast',
+    summary: 'Contrast Message',
+    detail: 'Message Content',
+    life: 3000,
+  })
 }
 
 /*
